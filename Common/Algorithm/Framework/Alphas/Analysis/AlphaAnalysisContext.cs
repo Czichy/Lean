@@ -100,8 +100,11 @@ namespace QuantConnect.Algorithm.Framework.Alphas.Analysis
 
             _previousEvaluationTimeUtc = CurrentValues.TimeUtc;
 
-            AnalysisEndTimeUtc = Alpha.GeneratedTimeUtc + analysisPeriod;
             AlphaPeriodEndTimeUtc = alpha.GeneratedTimeUtc + alpha.Period;
+
+            var barSize = Time.Max(analysisPeriod.ToHigherResolutionEquivalent(false).ToTimeSpan(), Time.OneMinute);
+            var barCount = (int)(alpha.Period.Ticks / barSize.Ticks);
+            AnalysisEndTimeUtc = Time.GetEndTimeForTradeBars(initialValues.ExchangeHours, alpha.CloseTimeUtc, analysisPeriod.ToHigherResolutionEquivalent(false).ToTimeSpan(), barCount, false);
         }
 
         /// <summary>
